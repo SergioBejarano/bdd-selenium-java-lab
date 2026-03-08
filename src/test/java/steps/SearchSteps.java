@@ -8,7 +8,6 @@ import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -53,14 +52,16 @@ public class SearchSteps {
          * luego se dispara el formulario, evitando problemas de
          * interactuabilidad del elemento.
          */
-        WebElement searchBox = wait.until(
-            ExpectedConditions.presenceOfElementLocated(By.name("q"))
-        );
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.name("q")));
+
+        // Locate and submit in one script execution to avoid stale references.
         ((JavascriptExecutor) driver).executeScript(
-            "arguments[0].value = arguments[1];", searchBox, term
-        );
-        ((JavascriptExecutor) driver).executeScript(
-            "arguments[0].form.submit();", searchBox
+            "const input = document.querySelector('input[name=\\\"q\\\"]');"
+                + "if (!input) { throw new Error('Search input not found'); }"
+                + "input.value = arguments[0];"
+                + "if (!input.form) { throw new Error('Search form not found'); }"
+                + "input.form.submit();",
+            term
         );
     }
 
