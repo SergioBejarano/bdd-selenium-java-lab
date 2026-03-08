@@ -50,9 +50,6 @@ public class GeolocationPage {
     }
 
     public String getLatitudeText() {
-        // Espera a que el elemento tenga texto real, no solo que sea visible.
-        // #lat-value existe desde el inicio pero vacío; solo tiene valor
-        // cuando la geolocalización responde con éxito.
         wait.until(driver -> {
             String text = latValue.getText().trim();
             return !text.isEmpty();
